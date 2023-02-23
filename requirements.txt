@@ -1,0 +1,3 @@
+transformers==4.17.0
+tqdm
+nmslib==23.0
