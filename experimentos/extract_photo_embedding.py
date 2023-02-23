@@ -175,12 +175,13 @@ if __name__ == '__main__':
         "photo_id",
         origin='data/yelp_dataset/resized_photos',
         detination='data/yelp_dataset/dataset_embedding_2.csv'
-    )
-    df_img = pd.read_csv('dataset_embedding.csv')
+    )  
     df_img = df_img.rename({'embeddings': 'embs'}, axis=1)
+    # Completes null values ​​with null embeddings
     df_img['embs'] = df_img['embs'].fillna(str(list(np.zeros(2048))))
 
     print("Calculating averange embeddings...")
+    # Averages the embeddings by business_id
     df_result_mean_emb = df_img.groupby('business_id').agg({'embs': mean_emb})
     df_result_mean_emb.loc[df_result_mean_emb['embs'].isna(), ['embs']] = df_result_mean_emb.loc[
         df_result_mean_emb['embs'].isna(),
@@ -189,6 +190,7 @@ if __name__ == '__main__':
 
     print(df_result_mean_emb.head())
 
+    # For businesses without a photo, assign null embedding
     df_bus = pd.read_csv(
         'data\\yelp_dataset\\yelp_academic_dataset_business.csv')
     df_export = df_bus.merge(
@@ -198,7 +200,7 @@ if __name__ == '__main__':
         ['embs']
     ].applymap(lambda x: np.zeros(2048))
 
-    # Exporta Dataset
+    # Export Dataset
     print("\n\nExtract Dataset...")
     export_dataset(
         df_result_mean_emb[['business_id', 'embs']], "embs", args.output_path
